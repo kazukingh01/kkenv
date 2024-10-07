@@ -61,16 +61,6 @@ sudo sed -i 's/^# set bell-style none/set bell-style none/' /etc/inputrc
 echo "set belloff=all" >> ~/.vimrc
 ```
 
-### Docker ( If you need )
-
-see: https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script
-
-```bash
-sudo apt install -y curl
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-```
-
 ### Cron
 
 ```bash
@@ -87,7 +77,30 @@ sudo systemctl restart rsyslog
 sudo /etc/init.d/cron start
 ```
 
-### Local Network Setting
+### Set NO automatic upgrade
+
+```bash
+sudo sed -i 's/"1"/"0"/g' /etc/apt/apt.conf.d/20auto-upgrades
+cat /etc/apt/apt.conf.d/20auto-upgrades
+# APT::Periodic::Update-Package-Lists "0";
+# APT::Periodic::Unattended-Upgrade "0";
+```
+
+```bash
+sudo reboot
+```
+
+### Docker ( If you need )
+
+see: https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script
+
+```bash
+sudo apt install -y curl
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+### Local Network Setting ( If you need )
 
 ```bash
 ip a
@@ -108,19 +121,6 @@ add below. ( mac address should be changed the number as same as one which can b
 ```bash
 sudo netplan apply
 ip a
-```
-
-### Set NO automatic upgrede
-
-```bash
-sudo sed -i 's/"1"/"0"/g' /etc/apt/apt.conf.d/20auto-upgrades
-cat /etc/apt/apt.conf.d/20auto-upgrades
-# APT::Periodic::Update-Package-Lists "0";
-# APT::Periodic::Unattended-Upgrade "0";
-```
-
-```bash
-sudo reboot
 ```
 
 # Python
