@@ -37,7 +37,7 @@ sudo ufw enable
 sudo ufw logging on
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow XXXXX # set ssh port
+sudo ufw allow ${M_SSH_PORT} # set ssh port
 sudo ufw allow from 172.128.128.0/24 to any port YYYYY # set db port if you need
 sudo ufw reload
 sudo ufw status
@@ -116,6 +116,21 @@ add below. ( mac address should be changed the number as same as one which can b
             set-name: eth1
             match:
                 macaddress: fa:16:3e:94:58:36
+```
+
+Or 
+
+```bash
+sudo vi /etc/netplan/01-netcfg.yaml
+```
+
+```
+    "ens4":
+      gateway4: 172.128.128.1
+      accept-ra: false
+      link-local: [ ]
+      addresses:
+        - 172.128.128.10/24
 ```
 
 ```bash
