@@ -46,44 +46,4 @@ sudo docker inspect postgres
 
 ### Connect to other container with other host
 
-!!!! ( Do below at the other host ) !!!!
-
-```bash
-sudo vi /etc/ufw/sysctl.conf
-```
-
-```diff
--#net/ipv4/ip_forward=1
-+net/ipv4/ip_forward=1
-```
-
-```bash
-sudo vi /etc/default/ufw
-```
-
-```diff
--DEFAULT_FORWARD_POLICY="DROP"
-+DEFAULT_FORWARD_POLICY="ACCEPT"
-```
-
-```bash
-sudo vi /etc/ufw/before.rules
-```
-
-Add end of the file.
-
-```diff
-+*nat
-+:POSTROUTING ACCEPT [0:0]
-+:PREROUTING ACCEPT [0:0]
-+-F
-+-A POSTROUTING -s 172.128.64.0/24 -o docker0 -j MASQUERADE
-+-A PREROUTING -p tcp --dport 55432 -s 172.128.64.0/24 -j DNAT --to-destination 172.17.0.2:5432
-+COMMIT
-```
-
-```bash
-sudo ufw allow from 172.128.64.0/24 to any port 55432 # set db port if you need
-sudo ufw reload
-sudo ufw status
-```
+see: https://github.com/kazukingh01/kkpsgre/tree/2a66db8b6b7d8040853c21a528fac7ba8a413758?tab=readme-ov-file#port-forward-to-container
