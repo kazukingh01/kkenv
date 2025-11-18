@@ -7,11 +7,11 @@ sudo apt update && sudo apt install -y git pwgen
 cd ~
 git clone https://github.com/getredash/setup.git redash
 cd ~/redash
-git checkout 96e4f16e70ab9fa354e7333ff8e03eb06337027c
+git checkout 9289121b43a66bed1f2a08e0fc4d38d6931c90de
 vi setup.sh
 ```
 
-Remove extra port forwarding.
+I don't know why but it didn't work when I edited ./data/compose.yaml directoly.
 
 ```diff
   sed -i "s|__TAG__|$TAG|" compose.yaml
@@ -23,16 +23,27 @@ Remove extra port forwarding.
 ```
 
 ```bash
-cd ~/redash
-sudo bash setup.sh
+sudo bash setup.sh --version 25.8.0
 ```
 
 ### Stop redash
 
 ```bash
-sudo docker network disconnect redash_default postgres # If you added network
+# sudo docker network disconnect redash_default postgres # If you added network
 sudo docker compose -f /opt/redash/compose.yaml down
+```
+
+### Start redash
+
+```bash
+sudo docker compose -f /opt/redash/compose.yaml up -d
+```
+
+### Delete ALL
+
+```bash
 sudo rm -rf /opt/redash/*
+sudo bash setup.sh --version 25.8.0
 ```
 
 # Network
