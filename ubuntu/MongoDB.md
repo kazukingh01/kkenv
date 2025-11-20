@@ -327,11 +327,11 @@ rs.add({
 
 ##### ①レプリケーションの追加（ ReplicaSet の member を追加. config server の追加もこれに該当する ）
 
-1. 追加したい ReplicaSet ( Primary ) がある serverAの config1 とほぼ同じものを、追加したい serverB に config2 として配備
+1. 追加したい ReplicaSetA ( Primary ) がある serverAの config1 (ReplicaSetA) とほぼ同じものを、追加したい serverB に config2 (ReplicaSetA) として配備
 2. serverB で dir などの環境を作成する
-3. serverB で config2 の mongod プロセスを起動
+3. serverB で config2 (ReplicaSetA) の mongod プロセスを起動
 4. serverA ( Primary ) で ```rs.add``` で serverB を加える
-5. ※オプション※ config のレプリケーション追加のみ、```/etc/mongos.conf``` を編集して再起動を推奨. shard のレプリケーション追加では必要ない
+5. ※オプション※ config server のレプリケーション追加のみ、```/etc/mongos.conf``` を編集して再起動を推奨. shard のレプリケーション追加では必要ない
 
 ##### ②shard の追加
 
@@ -342,4 +342,5 @@ rs.add({
 5. serverA の mongos で ```sh.addShard``` して shard を追加. ※ config server には何もしなくて良い. mongos が勝手に知らせてくれる
 
 という流れであり、実際には②＋①のような複合的な操作が行われている。※多くの場合、②の作業に①が伴う
+
 つまり、作業としては、①が行われるか、②＋①が行われるかという事である
