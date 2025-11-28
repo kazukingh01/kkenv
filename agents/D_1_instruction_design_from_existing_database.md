@@ -24,7 +24,7 @@ sudo apt-get install -y postgresql-client
 
 ## 接続情報
 
-./conninfo.txt に私が記載する.
+./coninfo.txt に私が記載する.
 
 ```bash
 postgresql://myuser:mypassword@localhost:5432/mydb # example
@@ -35,18 +35,31 @@ postgresql://myuser:mypassword@localhost:5432/mydb # example
 次のコマンドでSQLを実行できる.
 
 ```bash
-psql "$(cat ./conninfo.txt)" -c "SELECT * FROM table_name LIMIT 100;"
+psql "$(cat ./coninfo.txt)" -c "SELECT * FROM table_name LIMIT 100;"
 ```
 
 - DELETE / INSERT / UPDATE / DROP TABLE など、データを変更する操作は一切行わないこと
 - あなたは SELECT のみ実行できる
 - 必ず LIMIT をつけ、データを制限すること. MAX は LIMIT 1000 までとする
 
+
+## psql の使用例
+
+- ORDER/LIMIT の併用で実データ確認
+  `psql "$(cat ./coninfo.txt)" -c "SELECT id, status FROM orders ORDER BY updated_at DESC LIMIT 50;"`
+- ダブルクォートでカラム/テーブル名に大文字・特殊文字がある場合
+  `psql "$(cat ./coninfo.txt)" -c "SELECT \"UserId\", \"createdAt\" FROM \"Users\" LIMIT 10;"`
+- シングルクォートを値に含む場合は2連続でエスケープ
+  `psql "$(cat ./coninfo.txt)" -c "SELECT * FROM messages WHERE body LIKE '%it''s urgent%' LIMIT 20;"`
+- バックスラッシュを含むパターン検索（標準でバッククォートは不要）
+  `psql "$(cat ./coninfo.txt)" -c "SELECT * FROM files WHERE path LIKE '%\\\\tmp\\\\%' LIMIT 20;"`
+
 # 方法
 
-1. @./DESIGN_database.md を新規作成する
-2. プロジェクトのソースコードを読み、実装を理解する
-3. 以下の点に注意し、以下の templace に従って、"DESIGN_database.md" を完成させる
+1. @coninfo.txt が空や未作成の場合は作業をストップせよ. 以下の作業を行うな
+2. @./DESIGN_database.md を新規作成する
+3. プロジェクトのソースコードを読み、実装を理解する
+4. 以下の点に注意し、以下の templace に従って、"DESIGN_database.md" を完成させる
   - スキーマを定義するファイルがある場合、それを正として良い
   - あるカラムのデータは、複数のスクリプトにまたがって、INSERTされ、UPDATEされている可能性がある. プログラムの処理の順番を慎重に考慮して判断せよ
   - 判断に曖昧さが残る場合は、その旨も記載せよ
@@ -57,7 +70,7 @@ table name 1:
   テーブルの説明をいれる
 - column A: カラムの型
   どんなプログラムから、どんなアルゴリズムによって作成/取得され、どんなデータがあるか, Primary key や uniqu key であるのか, デフォルトではどんな値となるか, について記載する.
-  `psql "$(cat ./conninfo.txt)" -c "WITH A AS (SELECT col FROM t LIMIT 1000) SELECT col FROM A GROUP BY col;" といった方法で実際のデータを確認し、どういったデータが入っているのかの例を３つ程度記載する.
+  `psql "$(cat ./coninfo.txt)" -c "WITH A AS (SELECT col FROM t LIMIT 1000) SELECT col FROM A GROUP BY col;" といった方法で実際のデータを確認し、どういったデータが入っているのかの例を３つ程度記載する.
 
 - column B:
 ...

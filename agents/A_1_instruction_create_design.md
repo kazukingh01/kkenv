@@ -119,7 +119,7 @@ script path 2
 ## Programming guidelines
 
 <<<
-@Z_2_programming guidelines.md の指針に従って記述して
+@Z_2_programming_guidelines.md の指針に従って記述して
 >>>
 
 # Project Overview
