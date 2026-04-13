@@ -12,4 +12,5 @@ docker run -itd \
     -e GH_TOKEN=$GH_TOKEN \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$SCRIPT_DIR/workspace":/workspace \
+    -v "$HOME/.claude/skills":/home/claude/.claude/skills:ro \
     claude-code

@@ -54,7 +54,7 @@ RUN useradd -m -s /bin/bash claude \
     && echo 'claude ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/claude
 
 # Set up claude settings for all permissions
-RUN mkdir -p /home/claude/.claude && \
+RUN mkdir -p /home/claude/.claude/skills && \
     echo '{"permissions":{"allow":["*"],"deny":[]}}' > /home/claude/.claude/settings.json && \
     chown -R claude:claude /home/claude/.claude
 
