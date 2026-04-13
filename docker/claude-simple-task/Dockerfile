@@ -8,7 +8,14 @@ RUN apt-get update && apt-get install -y \
     sudo \
     ca-certificates \
     jq \
+    locales \
+    less \
+    && locale-gen ja_JP.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=ja_JP.UTF-8 \
+    LC_ALL=ja_JP.UTF-8 \
+    LESSCHARSET=utf-8
 
 # Install Node.js (LTS)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
