@@ -57,4 +57,17 @@ sudo docker inspect postgres
 
 ### Connect to other container with other host
 
-see: https://github.com/kazukingh01/kkpsgre/tree/2a66db8b6b7d8040853c21a528fac7ba8a413758?tab=readme-ov-file#port-forward-to-container
+- まず、dockerホストでローカルネットワーク( `192.168.1.0/24` )に接続する
+- UFW で以下のようにネットワーク接続を許可しておく
+
+```bash
+sudo ufw allow from 192.168.1.0/24
+```
+
+- 以下のような方法で、dockerホストのローカルネットワークアドレスに対して bind して docker run する
+
+```bash
+sudo docker run \
+  .....
+  -p 192.168.1.10:55432:5432 \
+```
