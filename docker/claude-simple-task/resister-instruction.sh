@@ -17,6 +17,7 @@ INTERVAL_MIN=""
 CONTAINER="claude-code-simple"
 MODEL="sonnet"
 MAX_TURNS=30
+DELETE=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -25,10 +26,33 @@ while [ $# -gt 0 ]; do
     --container) CONTAINER="$2";   shift 2 ;;
     --model)     MODEL="$2";       shift 2 ;;
     --max-turns) MAX_TURNS="$2";   shift 2 ;;
+    --delete)    DELETE=1;         shift ;;
     -*)          echo "Unknown option: $1" >&2; exit 1 ;;
     *)           JOB_NAME="$1";    shift ;;
   esac
 done
+
+# --delete: tear down a previously registered job (timer/service/runner/input).
+# Logs are intentionally preserved so post-mortem inspection remains possible.
+if [ "${DELETE}" -eq 1 ]; then
+  if [ -z "${JOB_NAME}" ]; then
+    echo "Usage: resister-instruction.sh <job_name> --delete" >&2
+    exit 1
+  fi
+  UNIT_NAME="claude-task-${JOB_NAME}"
+  echo "Disabling ${UNIT_NAME}.timer ..."
+  sudo systemctl disable --now "${UNIT_NAME}.timer" 2>/dev/null || true
+  sudo systemctl stop "${UNIT_NAME}.service" 2>/dev/null || true
+  sudo rm -f "/etc/systemd/system/${UNIT_NAME}.timer" \
+             "/etc/systemd/system/${UNIT_NAME}.service"
+  sudo systemctl daemon-reload
+  sudo systemctl reset-failed "${UNIT_NAME}.service" 2>/dev/null || true
+  rm -f "${SCRIPT_DIR}/run-${JOB_NAME}.sh"
+  rm -f "${SHARE_DIR}/instruction/${JOB_NAME}.md"
+  echo "Deleted job: ${JOB_NAME}"
+  echo "(Logs under ${SHARE_DIR}/logs/${JOB_NAME}-*.jsonl kept)"
+  exit 0
+fi
 
 if [ -z "${JOB_NAME}" ] || [ -z "${INPUT_FILE}" ] || [ -z "${INTERVAL_MIN}" ]; then
   echo "Usage: resister-instruction.sh <job_name> --input <INPUT.md> --interval <minutes> \\" >&2
@@ -79,6 +103,9 @@ MAX_TURNS="${MAX_TURNS}"
 
 TS="\$(date +%Y%m%d-%H%M%S)"
 STREAM_LOG="\${LOG_DIR_HOST}/\${JOB_NAME}-\${TS}.jsonl"
+
+# Retain only the last 3 days of stream logs for this job.
+find "\${LOG_DIR_HOST}" -maxdepth 1 -type f -name "\${JOB_NAME}-*.jsonl" -mtime +3 -delete 2>/dev/null || true
 
 PROMPT="Read the instruction file at ${INPUT_GUEST} and execute the instructions written there. The file is read-only; do not attempt to modify it."
 
