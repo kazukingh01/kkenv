@@ -1,13 +1,13 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Re-exec with sudo if not root, preserving GH_TOKEN
+# Re-exec with sudo if not root, preserving GH_TOKEN and HOME
 if [ "$(id -u)" -ne 0 ]; then
-    exec sudo GH_TOKEN="$GH_TOKEN" bash "$0" "$@"
+    exec sudo HOME="$HOME" GH_TOKEN="$GH_TOKEN" bash "$0" "$@"
 fi
 
-docker build -t claude-code "$SCRIPT_DIR"
+sudo docker build -t claude-code "$SCRIPT_DIR"
 
-docker run -itd \
+sudo docker run -itd \
     --name claude-code \
     -e GH_TOKEN=$GH_TOKEN \
     -v /var/run/docker.sock:/var/run/docker.sock \
