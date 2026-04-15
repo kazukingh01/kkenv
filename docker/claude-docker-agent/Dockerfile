@@ -32,11 +32,6 @@ ENV LANG=ja_JP.UTF-8 \
     LC_ALL=ja_JP.UTF-8 \
     LESSCHARSET=utf-8
 
-# Install Node.js (LTS)
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install build tools and libraries
 RUN apt-get update -qq && apt-get install -y -qq \
     build-essential \
@@ -52,9 +47,6 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
-
-# Install Claude Code globally
-RUN npm install -g @anthropic-ai/claude-code
 
 # Install Docker CLI only (daemon is on the host via socket mount)
 RUN install -m 0755 -d /etc/apt/keyrings \
@@ -85,6 +77,10 @@ USER claude
 
 RUN git config --global user.email "claude@example.com" \
     && git config --global user.name "Claude"
+
+# Install Claude Code via native installer (supports `claude --update` / self-update)
+RUN curl -fsSL https://claude.ai/install.sh | bash
+ENV PATH=/home/claude/.local/bin:$PATH
 
 RUN echo 'alias claude="claude --dangerously-skip-permissions"' >> /home/claude/.bashrc
 
