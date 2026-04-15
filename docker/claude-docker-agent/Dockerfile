@@ -11,6 +11,13 @@ RUN apt-get update && apt-get install -y \
     gpg \
     locales \
     less \
+    jq \
+    ripgrep \
+    unzip \
+    zip \
+    vim \
+    wget \
+    tree \
 && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
        | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
@@ -35,6 +42,9 @@ RUN apt-get update -qq && apt-get install -y -qq \
     build-essential \
     pkg-config \
     libssl-dev \
+    python3 \
+    python3-pip \
+    python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust (latest stable)
