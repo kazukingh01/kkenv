@@ -1,0 +1,57 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run test:*)",
+      "Read(~/.zshrc)",
+      "Read(~/.bashrc)",
+      "Read(~/.claude/*)",
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(ls *)",
+      "Bash(which *)",
+      "Bash(pyplaywright *)",
+      "Bash(/*/python /*/pyplaywright.py *)",
+      "Write(*)",
+      "Bash(cargo build *)",
+      "Edit"
+    ],
+    "deny": [
+      "Bash(curl:*)",
+      "Read(./.env)",
+      "Read(./.*.env)",
+      "Read(~/.ssh/*)",
+      "Read(./secrets/**)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ./*)",
+      "Bash(rm -rf *)"
+    ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "defaultMode": "acceptEdits",
+  "remoteControlAtStartup": false
+}
