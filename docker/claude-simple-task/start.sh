@@ -38,7 +38,7 @@ if [ "$DELETE" -eq 1 ]; then
     sudo docker rm "$CONTAINER_NAME" 2>/dev/null
 fi
 
-sudo docker build -t claude-code-simple "$SCRIPT_DIR"
+sudo docker build -t ${BASE_NAME} "$SCRIPT_DIR"
 
 sudo docker run -itd \
     --name "$CONTAINER_NAME" \
@@ -47,6 +47,6 @@ sudo docker run -itd \
     -v "$SCRIPT_DIR/CLAUDE.md":/workspace/CLAUDE.md:ro \
     -v "$SCRIPT_DIR/share":/workspace/share \
     -v "$SCRIPT_DIR/share/instruction":/workspace/share/instruction:ro \
-    claude-code-simple
+    ${BASE_NAME}
 
 sudo docker exec -it "$CONTAINER_NAME" claude --dangerously-skip-permissions

@@ -49,6 +49,34 @@ Treat `browser-use <subcommand>` as a Playwright wrapper. The browser runs as a 
 - The daemon keeps the session alive between separate Bash invocations — you don't need to re-open the URL each time.
 - Bash timeout: give `open` / `state` ~60s on heavy pages.
 
+# Text-to-speech (edge-tts)
+
+`edge-tts` is installed for converting text into a human-sounding voice file. It uses Microsoft Edge's online Read Aloud service — **no API key required**, but **needs network access**.
+
+- Install location: `/opt/edge-tts-venv/` (Python venv), binary at `/opt/edge-tts-venv/bin/edge-tts`
+- Wrapper script: `/usr/local/bin/tts.sh` (recommended entry point)
+- Native output is **MP3**. For **WAV**, `tts.sh` transcodes via `ffmpeg` automatically based on the output filename extension.
+
+## Usage (`tts.sh`)
+```
+tts.sh [-v VOICE] [-r RATE] [-p PITCH] TEXT OUTPUT
+tts.sh [-v VOICE] [-r RATE] [-p PITCH] -f INPUT_FILE OUTPUT
+```
+- Output format is decided by `OUTPUT`'s extension: `.mp3` or `.wav` only.
+- Default voice: `ja-JP-NanamiNeural` (Japanese female). Other JA voices: `ja-JP-KeitaNeural` (male), `ja-JP-AoiNeural`, `ja-JP-DaichiNeural`, etc. List all voices with `edge-tts --list-voices`.
+- `-r` example: `+10%` / `-20%` (rate). `-p` example: `+5Hz` / `-10Hz` (pitch).
+
+## Examples
+```
+tts.sh "こんにちは、テストです" hello.mp3
+tts.sh -f manuscript.txt narration.wav
+tts.sh -v ja-JP-KeitaNeural -r "+10%" -f script.txt fast_male.mp3
+```
+
+## Notes
+- Requires outbound HTTPS to Microsoft endpoints. Offline use is not supported (use a local TTS engine like `piper` if needed).
+- `edge-tts` itself can also be invoked directly: `edge-tts --voice <v> --text "<t>" --write-media out.mp3` — `tts.sh` is just a thin wrapper that adds defaults and WAV transcoding.
+
 # Discord notifications
 
 Use `/usr/local/bin/notify-discord.sh <message>` to post to Discord.

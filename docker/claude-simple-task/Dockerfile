@@ -44,6 +44,16 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
 RUN ${BROWSER_USE_VENV}/bin/playwright install --with-deps chromium \
     && chmod -R a+rX /opt/ms-playwright
 
+# Install edge-tts (Microsoft Edge online TTS, no API key needed) in its own venv
+ENV EDGE_TTS_VENV=/opt/edge-tts-venv
+RUN python3 -m venv ${EDGE_TTS_VENV} \
+    && ${EDGE_TTS_VENV}/bin/pip install --no-cache-dir edge-tts==7.2.8
+ENV PATH=${EDGE_TTS_VENV}/bin:$PATH
+
+# ffmpeg for WAV transcoding (edge-tts only outputs MP3)
+RUN apt-get update -qq && apt-get install -y -qq ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
 # Create non-root user with sudo privileges
 RUN useradd -m -s /bin/bash claude \
     && echo 'claude ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/claude
@@ -57,9 +67,10 @@ RUN mkdir -p /home/claude/.claude/skills && \
 ENV DISCORD_WEBHOOK_URL=""
 ENV DISCORD_MENTION=""
 
-# Install notify-discord.sh to /usr/local/bin so it's on PATH for all users
-COPY notify-discord.sh /usr/local/bin/notify-discord.sh
-RUN chmod +x /usr/local/bin/notify-discord.sh
+# Install helper scripts to /usr/local/bin so they're on PATH for all users
+COPY scripts/notify-discord.sh /usr/local/bin/notify-discord.sh
+COPY scripts/tts.sh /usr/local/bin/tts.sh
+RUN chmod +x /usr/local/bin/notify-discord.sh /usr/local/bin/tts.sh
 
 WORKDIR /workspace
 RUN chown claude:claude /workspace
