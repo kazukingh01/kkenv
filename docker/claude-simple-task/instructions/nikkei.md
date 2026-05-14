@@ -41,7 +41,7 @@ browser-use open "https://www.nikkei.com/"          # クッキー反映のた�
 
 ### アクセスランキング
 
-`https://www.nikkei.com/access/` を開き、top 20 までの記事について、記事IDの一覧を入手し、`/workspace/tmp.txt` に追加する. HTMLの構造は以下のようになっていると予想される.
+`https://www.nikkei.com/access/index/?bd=hKijiSougou` を開き、top 20 までの記事について、記事IDの一覧を入手し、`/workspace/tmp.txt` に追加する. HTMLの構造は以下のようになっていると予想される.
 ```html
 <span class="m-miM32_itemTitle">
     <span class="m-miM32_itemTitleText">
@@ -100,6 +100,10 @@ HTMLは以下のようになっていると予想される. `<a>` タグの `ng=
 5. `tts.sh -v ja-JP-KeitaNeural -f /workspace/share/nikkei/XXXXX.txt /workspace/share/nikkei/XXXXX.wav` に保存する
 6. `/workspace/data.sqlite` に `article_id` と `datetime` を INSER する
 7. 次の `article_id` で 作業1. から再度行う
+
+## その他
+
+- 必要な python module は適宜 install して良い
 
 # 補足
 
