@@ -7,6 +7,8 @@
 
 ## 成果物
 
+成果物は `/workspace/share/nikkei/YYYYMMDD/YYYYMMDD/` 配下に格納され、成果物は以下を指す. `YYYYMMDD` とは本処理を実行した日付を指す.
+
 - 記事単位の本文テキスト ( `XXXXX.org` マークダウン形式 )
 - 記事単位の要約 ( `XXXXX.md` マークダウン形式 )
 - `XXXXX.md` を原稿形式に変換したテキストファイル ( `XXXXX.txt` ファイル形式 )
@@ -95,14 +97,14 @@ HTMLは以下のようになっていると予想される. `<a>` タグの `ng=
 `/workspace/tmp.txt` にある全ての `article_id` に対して以下をループする.
 
 1. `https://www.nikkei.com/article/XXXXX/` ( `XXXXX` は `article_id` ) を開く
-2. 記事本文のテキストをそのまま出力し、`/workspace/share/nikkei/XXXXX.org` に保存
-3. 記事本文のテキストをマークダウン用に整形し、`/workspace/share/nikkei/XXXXX.md` に保存
-4. `/workspace/share/nikkei/XXXXX.md` を入力として、読み上げるニュース原稿形式にテキスト変換し、`/workspace/share/nikkei/XXXXX.txt` に保存. ニュース原稿形式は以下を参考に整形すること.
+2. 記事本文のテキストをそのまま出力し、`/workspace/share/nikkei/YYYYMMDD/XXXXX.org` に保存
+3. 記事本文のテキストをマークダウン用に整形し、`/workspace/share/nikkei/YYYYMMDD/XXXXX.md` に保存
+4. `/workspace/share/nikkei/YYYYMMDD/XXXXX.md` を入力として、読み上げるニュース原稿形式にテキスト変換し、`/workspace/share/nikkei/YYYYMMDD/XXXXX.txt` に保存. ニュース原稿形式は以下を参考に整形すること.
   - 冒頭はタイトルの体言止め1文
   - 全体で400〜600文字
   - 記号（【】・/など）は音声で自然に読める表現に変換
   - 末尾は「以上、〇〇に関するニュースでした。」
-5. `tts.sh -v ja-JP-KeitaNeural -f /workspace/share/nikkei/XXXXX.txt /workspace/share/nikkei/XXXXX.wav` に保存する
+5. `tts.sh -v ja-JP-KeitaNeural -f /workspace/share/nikkei/YYYYMMDD/XXXXX.txt /workspace/share/nikkei/YYYYMMDD/XXXXX.wav` に保存する
 6. `/workspace/data.sqlite` に `article_id` と `datetime` を INSER する.
   - `.wav` ファイルの存在確認後にINSERT
   - ```if os.path.exists(wav_path) and os.path.getsize(wav_path) > 1000: insert_to_db(article_id)```

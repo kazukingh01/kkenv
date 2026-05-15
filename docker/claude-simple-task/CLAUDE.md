@@ -4,7 +4,9 @@ description: How to use browser-use CLI as a Playwright wrapper without any LLM 
 type: reference
 originSessionId: 5d35fbfe-bdee-4a1c-a363-dd497e099b9f
 ---
-# browser-use is installed in this environment
+# Tools
+
+## browser-use (installed in this environment)
 
 - Install location: `/opt/browser-use-venv/` (Python venv)
 - Main binary: `/opt/browser-use-venv/bin/browser-use` (also `browseruse`, `browser-task`, `browser-use-tui`)
@@ -12,11 +14,11 @@ originSessionId: 5d35fbfe-bdee-4a1c-a363-dd497e099b9f
 - Chromium: pre-installed at `/opt/ms-playwright/`
 - **No LLM API key is configured.** The agent mode (autonomous LLM-driven) will NOT work out of the box. The `extract` subcommand also requires an LLM.
 
-# CLI manual mode — no API key required
+### CLI manual mode — no API key required
 
 Treat `browser-use <subcommand>` as a Playwright wrapper. The browser runs as a **persistent daemon** — state (current URL, tabs) carries across commands. Close with `browser-use close` when done.
 
-## Core subcommands (LLM-free)
+#### Core subcommands (LLM-free)
 - `open <URL>` — navigate
 - `state` — dump viewport, scroll, and an indexed element tree (each interactive element gets an `[N]` index). Use these indices for click/type/etc.
 - `click <index>` or `click <x> <y>`
@@ -30,11 +32,11 @@ Treat `browser-use <subcommand>` as a Playwright wrapper. The browser runs as a 
 - `--json` global flag for machine-readable output
 - `--headed` to show window (default is headless in this sandbox; GUI not available anyway)
 
-## LLM-required (do NOT use without API key)
+#### LLM-required (do NOT use without API key)
 - `extract <query>` — uses LLM
 - Agent mode (`browser-task`, `browser-use` without subcommand in agent style)
 
-## Typical flow
+#### Typical flow
 ```
 /opt/browser-use-venv/bin/browser-use open "https://example.com"
 /opt/browser-use-venv/bin/browser-use state        # find element index
@@ -43,14 +45,14 @@ Treat `browser-use <subcommand>` as a Playwright wrapper. The browser runs as a 
 /opt/browser-use-venv/bin/browser-use close
 ```
 
-## Gotchas
+#### Gotchas
 - `state` output can be long — pipe to `head` / `tail` when scanning.
 - Japanese/CJK pages render fine; text appears inline in `state` output.
 - The daemon keeps the session alive between separate Bash invocations — you don't need to re-open the URL each time.
 - **Single session only**: browser-use exposes one shared session, so process items (e.g. articles) strictly one at a time in sequence. Do not attempt parallel browser operations.
 - Bash timeout: give `open` / `state` ~60s on heavy pages.
 
-# Text-to-speech (edge-tts)
+## Text-to-speech (edge-tts)
 
 `edge-tts` is installed for converting text into a human-sounding voice file. It uses Microsoft Edge's online Read Aloud service — **no API key required**, but **needs network access**.
 
@@ -58,7 +60,7 @@ Treat `browser-use <subcommand>` as a Playwright wrapper. The browser runs as a 
 - Wrapper script: `/usr/local/bin/tts.sh` (recommended entry point)
 - Native output is **MP3**. For **WAV**, `tts.sh` transcodes via `ffmpeg` automatically based on the output filename extension.
 
-## Usage (`tts.sh`)
+### Usage (`tts.sh`)
 ```
 tts.sh [-v VOICE] [-r RATE] [-p PITCH] TEXT OUTPUT
 tts.sh [-v VOICE] [-r RATE] [-p PITCH] -f INPUT_FILE OUTPUT
@@ -67,18 +69,18 @@ tts.sh [-v VOICE] [-r RATE] [-p PITCH] -f INPUT_FILE OUTPUT
 - Default voice: `ja-JP-NanamiNeural` (Japanese female). Other JA voices: `ja-JP-KeitaNeural` (male), `ja-JP-AoiNeural`, `ja-JP-DaichiNeural`, etc. List all voices with `edge-tts --list-voices`.
 - `-r` example: `+10%` / `-20%` (rate). `-p` example: `+5Hz` / `-10Hz` (pitch).
 
-## Examples
+### Examples
 ```
 tts.sh "こんにちは、テストです" hello.mp3
 tts.sh -f manuscript.txt narration.wav
 tts.sh -v ja-JP-KeitaNeural -r "+10%" -f script.txt fast_male.mp3
 ```
 
-## Notes
+### Notes
 - Requires outbound HTTPS to Microsoft endpoints. Offline use is not supported (use a local TTS engine like `piper` if needed).
 - `edge-tts` itself can also be invoked directly: `edge-tts --voice <v> --text "<t>" --write-media out.mp3` — `tts.sh` is just a thin wrapper that adds defaults and WAV transcoding.
 
-# Discord notifications
+## Discord notifications
 
 Use `/usr/local/bin/notify-discord.sh <message>` to post to Discord.
 
@@ -90,3 +92,6 @@ Use `/usr/local/bin/notify-discord.sh <message>` to post to Discord.
 - Messages longer than 2000 characters are automatically truncated by the script.
 - On success the script exits 0 (HTTP 204); on failure it prints the response to stderr and exits 1.
 
+# Working Principles
+
+- For repetitive or recurring work, you are permitted (and encouraged) to create reusable scripts or shared utilities to consolidate the logic and improve efficiency, instead of repeating the same steps manually.
