@@ -152,7 +152,8 @@ sudo tee "/etc/systemd/system/${UNIT_NAME}.timer" >/dev/null <<EOF
 Description=Run claude task ${JOB_NAME} every ${INTERVAL_MIN} min
 
 [Timer]
-OnCalendar=*-*-* *:0/${INTERVAL_MIN}:00
+OnBootSec=1min
+OnUnitActiveSec=${INTERVAL_MIN}min
 Persistent=true
 RandomizedDelaySec=30
 
