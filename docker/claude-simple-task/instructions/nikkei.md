@@ -38,10 +38,11 @@ browser-use open "https://www.nikkei.com/"          # クッキー反映のた�
 
 - `echo "" > /workspace/tmp.txt` で空のファイルを作成する
 - **あらゆる広告(PR)リンクや記事は対象外である**. そのことに注意して対象記事を選定せよ
+- 本文が200文字未満の場合はスキップし、DBに記録して次の `article_id` に進む
 
 ### アクセスランキング
 
-`https://www.nikkei.com/access/index/?bd=hKijiSougou` を開き、top 20 までの記事について、記事IDの一覧を入手し、`/workspace/tmp.txt` に追加する. HTMLの構造は以下のようになっていると予想される.
+`https://www.nikkei.com/access/index/?bd=hKijiSougou` を開き、top 10 までの記事について、記事IDの一覧を入手し、`/workspace/tmp.txt` に追加する. HTMLの構造は以下のようになっていると予想される.
 ```html
 <span class="m-miM32_itemTitle">
     <span class="m-miM32_itemTitleText">
@@ -96,9 +97,15 @@ HTMLは以下のようになっていると予想される. `<a>` タグの `ng=
 1. `https://www.nikkei.com/article/XXXXX/` ( `XXXXX` は `article_id` ) を開く
 2. 記事本文のテキストをそのまま出力し、`/workspace/share/nikkei/XXXXX.org` に保存
 3. 記事本文のテキストをマークダウン用に整形し、`/workspace/share/nikkei/XXXXX.md` に保存
-4. `/workspace/share/nikkei/XXXXX.md` を入力として、読み上げるニュース原稿形式にテキスト変換し、`/workspace/share/nikkei/XXXXX.txt` に保存
+4. `/workspace/share/nikkei/XXXXX.md` を入力として、読み上げるニュース原稿形式にテキスト変換し、`/workspace/share/nikkei/XXXXX.txt` に保存. ニュース原稿形式は以下を参考に整形すること.
+  - 冒頭はタイトルの体言止め1文
+  - 全体で400〜600文字
+  - 記号（【】・/など）は音声で自然に読める表現に変換
+  - 末尾は「以上、〇〇に関するニュースでした。」
 5. `tts.sh -v ja-JP-KeitaNeural -f /workspace/share/nikkei/XXXXX.txt /workspace/share/nikkei/XXXXX.wav` に保存する
-6. `/workspace/data.sqlite` に `article_id` と `datetime` を INSER する
+6. `/workspace/data.sqlite` に `article_id` と `datetime` を INSER する.
+  - `.wav` ファイルの存在確認後にINSERT
+  - ```if os.path.exists(wav_path) and os.path.getsize(wav_path) > 1000: insert_to_db(article_id)```
 7. 次の `article_id` で 作業1. から再度行う
 
 ## その他

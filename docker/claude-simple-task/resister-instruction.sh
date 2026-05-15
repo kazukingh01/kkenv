@@ -51,6 +51,7 @@ if [ "${DELETE}" -eq 1 ]; then
   rm -f "${SHARE_DIR}/instruction/${JOB_NAME}.md"
   echo "Deleted job: ${JOB_NAME}"
   echo "(Logs under ${SHARE_DIR}/logs/${JOB_NAME}-*.jsonl kept)"
+  echo "(Carry-over memo ${SHARE_DIR}/memo/${JOB_NAME}.md kept; rm manually for a fresh start)"
   exit 0
 fi
 
@@ -78,11 +79,17 @@ if [ ! -f "${INPUT_SRC}" ]; then
   exit 1
 fi
 
-mkdir -p "${SHARE_DIR}/logs" "${SHARE_DIR}/instruction"
+mkdir -p "${SHARE_DIR}/logs" "${SHARE_DIR}/instruction" "${SHARE_DIR}/memo"
 INPUT_NAME="${JOB_NAME}.md"
 INPUT_HOST="${SHARE_DIR}/instruction/${INPUT_NAME}"
 INPUT_GUEST="${SHARE_DIR_IN_CONTAINER}/instruction/${INPUT_NAME}"
 cp "${INPUT_SRC}" "${INPUT_HOST}"
+
+MEMO_HOST="${SHARE_DIR}/memo/${JOB_NAME}.md"
+MEMO_GUEST="${SHARE_DIR_IN_CONTAINER}/memo/${JOB_NAME}.md"
+if [ ! -f "${MEMO_HOST}" ]; then
+  : > "${MEMO_HOST}"
+fi
 
 UNIT_NAME="claude-task-${JOB_NAME}"
 RUNNER="${SCRIPT_DIR}/run-${JOB_NAME}.sh"
@@ -107,7 +114,13 @@ STREAM_LOG="\${LOG_DIR_HOST}/\${JOB_NAME}-\${TS}.jsonl"
 # Retain only the last 3 days of stream logs for this job.
 find "\${LOG_DIR_HOST}" -maxdepth 1 -type f -name "\${JOB_NAME}-*.jsonl" -mtime +3 -delete 2>/dev/null || true
 
-PROMPT="Read the instruction file at ${INPUT_GUEST} and execute the instructions written there. The file is read-only; do not attempt to modify it."
+PROMPT="You are running as one scheduled trial of a recurring simple task.
+
+1. FIRST, read the carry-over memo at ${MEMO_GUEST}. It is writable and holds learnings from previous trials (it may be empty on the first run). Apply any relevant guidance from it before acting.
+
+2. Read the instruction file at ${INPUT_GUEST} and execute it. This instruction file is READ-ONLY; do not attempt to modify it.
+
+3. LAST, update ${MEMO_GUEST} with concise carry-over notes for the next trial: facts discovered, failures and their causes, what to avoid, what worked, and open questions. Keep the entire file under 1500 English tokens (roughly 1000 English words, ~6KB). If it would exceed that budget, compress: merge duplicates, drop resolved/stale items, prefer the most recent and most actionable learnings. Use Markdown bullet points."
 
 docker exec -i "\${CONTAINER}" claude -p "\${PROMPT}" \\
   --model "\${MODEL}" \\
@@ -153,5 +166,6 @@ sudo systemctl enable --now "${UNIT_NAME}.timer"
 echo "Registered: ${UNIT_NAME}.timer (every ${INTERVAL_MIN} min)"
 echo "Runner:     ${RUNNER}"
 echo "Input:      ${INPUT_HOST}  (guest: ${INPUT_GUEST})"
+echo "Memo:       ${MEMO_HOST}  (guest: ${MEMO_GUEST}, rw, budget 1500 tok)"
 echo "Logs:       ${LOG_DIR_HOST}/${JOB_NAME}-*.jsonl"
 echo "Status:     systemctl list-timers ${UNIT_NAME}*"

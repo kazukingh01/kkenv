@@ -47,6 +47,7 @@ Treat `browser-use <subcommand>` as a Playwright wrapper. The browser runs as a 
 - `state` output can be long — pipe to `head` / `tail` when scanning.
 - Japanese/CJK pages render fine; text appears inline in `state` output.
 - The daemon keeps the session alive between separate Bash invocations — you don't need to re-open the URL each time.
+- **Single session only**: browser-use exposes one shared session, so process items (e.g. articles) strictly one at a time in sequence. Do not attempt parallel browser operations.
 - Bash timeout: give `open` / `state` ~60s on heavy pages.
 
 # Text-to-speech (edge-tts)
