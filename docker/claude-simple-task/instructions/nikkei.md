@@ -7,7 +7,7 @@
 
 ## 成果物
 
-成果物は `/workspace/share/nikkei/YYYYMMDD/YYYYMMDD/` 配下に格納され、成果物は以下を指す. `YYYYMMDD` とは本処理を実行した日付を指す.
+成果物は `/workspace/share/nikkei/YYYYMMDD/` 配下に格納され、成果物は以下を指す. `YYYYMMDD` とは本処理を実行した日付を指す. `YYYYMMDD` の directory が無ければ、作成する.
 
 - 記事単位の本文テキスト ( `XXXXX.org` マークダウン形式 )
 - 記事単位の要約 ( `XXXXX.md` マークダウン形式 )
