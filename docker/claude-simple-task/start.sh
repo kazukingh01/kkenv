@@ -43,6 +43,7 @@ sudo docker build -t ${BASE_NAME} "$SCRIPT_DIR"
 sudo docker run -itd \
     --name "$CONTAINER_NAME" \
     --env-file .env \
+    -e TZ=Asia/Tokyo \
     -v "$HOME/.claude/skills":/home/claude/.claude/skills:ro \
     -v "$SCRIPT_DIR/CLAUDE.md":/workspace/CLAUDE.md:ro \
     -v "$SCRIPT_DIR/share":/workspace/share \
