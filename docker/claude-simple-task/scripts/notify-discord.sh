@@ -1,6 +1,27 @@
 #!/bin/bash
 set -euo pipefail
 
+usage() {
+  cat >&2 <<'EOF'
+Usage: notify-discord.sh <message>
+
+Post a message to Discord via an incoming webhook.
+
+Arguments:
+  <message>   Message body (truncated to Discord's 2000 char limit)
+
+Environment:
+  DISCORD_WEBHOOK_URL   Webhook URL (required)
+
+Options:
+  -h, --help  Show this help
+EOF
+}
+
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+esac
+
 WEBHOOK_URL="${DISCORD_WEBHOOK_URL:?DISCORD_WEBHOOK_URL is not set}"
 MESSAGE="${1:?Usage: notify-discord.sh <message>}"
 

@@ -10,6 +10,21 @@ BASE_NAME="claude-code-simple"
 LABEL=""
 DELETE=0
 
+usage() {
+    cat >&2 <<EOF
+Usage: start.sh [--label <name>] [--delete]
+
+Build and start the ${BASE_NAME} container, then attach a claude session.
+
+Options:
+  --label <name>   Suffix the container name as "${BASE_NAME}-<name>" so
+                   multiple instances can coexist.
+  --delete         Stop and remove the existing container of the same name
+                   before starting a new one.
+  -h, --help       Show this help
+EOF
+}
+
 while [ $# -gt 0 ]; do
     case "$1" in
         --label)
@@ -20,8 +35,13 @@ while [ $# -gt 0 ]; do
             DELETE=1
             shift
             ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
         *)
             echo "Unknown option: $1" >&2
+            usage
             exit 1
             ;;
     esac

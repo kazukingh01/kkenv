@@ -22,6 +22,11 @@ INPUT_FILE=""
 
 usage() { sed -n '4,17p' "$0" >&2; }
 
+# getopts does not understand long options; handle --help explicitly.
+for arg in "$@"; do
+  [ "$arg" = "--help" ] && { usage; exit 0; }
+done
+
 while getopts ":v:r:p:f:h" opt; do
   case "$opt" in
     v) VOICE="$OPTARG" ;;

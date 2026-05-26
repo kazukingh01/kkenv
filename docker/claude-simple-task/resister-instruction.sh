@@ -20,6 +20,27 @@ MODEL="sonnet"
 MAX_TURNS=30
 DELETE=0
 
+usage() {
+  cat >&2 <<EOF
+Usage: resister-instruction.sh <job_name> --input <INPUT.md> (--interval <minutes> | --at <H[,H...]>) \\
+                                [--container <name>] [--model <model>] [--max-turns <N>]
+       resister-instruction.sh <job_name> --delete
+
+Register a systemd timer on the host that periodically feeds an instruction
+file to \`claude\` running inside an already-launched container via docker exec.
+
+  <job_name>          Identifier used for unit names and logs
+  --input <path>      Path to instruction file (sent as the prompt)
+  --interval <min>    Run every N minutes (mutually exclusive with --at)
+  --at <H[,H...]>     Run daily at given hours (0-23, comma-separated; minute fixed to :00)
+  --container <name>  Target container running claude (default: ${CONTAINER})
+  --model <model>     claude --model value (default: ${MODEL})
+  --max-turns <N>     claude --max-turns value (default: ${MAX_TURNS})
+  --delete            Tear down a previously registered job (logs/memo kept)
+  -h, --help          Show this help
+EOF
+}
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --input)     INPUT_FILE="$2"; shift 2 ;;
@@ -29,7 +50,8 @@ while [ $# -gt 0 ]; do
     --model)     MODEL="$2";       shift 2 ;;
     --max-turns) MAX_TURNS="$2";   shift 2 ;;
     --delete)    DELETE=1;         shift ;;
-    -*)          echo "Unknown option: $1" >&2; exit 1 ;;
+    -h|--help)   usage; exit 0 ;;
+    -*)          echo "Unknown option: $1" >&2; usage; exit 1 ;;
     *)           JOB_NAME="$1";    shift ;;
   esac
 done
@@ -43,7 +65,7 @@ fi
 # Logs are intentionally preserved so post-mortem inspection remains possible.
 if [ "${DELETE}" -eq 1 ]; then
   if [ -z "${JOB_NAME}" ]; then
-    echo "Usage: resister-instruction.sh <job_name> --delete" >&2
+    usage
     exit 1
   fi
   UNIT_NAME="claude-task-${JOB_NAME}"
@@ -63,16 +85,7 @@ if [ "${DELETE}" -eq 1 ]; then
 fi
 
 if [ -z "${JOB_NAME}" ] || [ -z "${INPUT_FILE}" ] || { [ -z "${INTERVAL_MIN}" ] && [ -z "${AT_HOURS}" ]; }; then
-  echo "Usage: resister-instruction.sh <job_name> --input <INPUT.md> (--interval <minutes> | --at <H[,H...]>) \\" >&2
-  echo "                                [--container <name>] [--model <model>] [--max-turns <N>]" >&2
-  echo "" >&2
-  echo "  <job_name>          Identifier used for unit names and logs" >&2
-  echo "  --input <path>      Path to instruction file (sent as the prompt)" >&2
-  echo "  --interval <min>    Run every N minutes (mutually exclusive with --at)" >&2
-  echo "  --at <H[,H...]>     Run daily at given hours (0-23, comma-separated; minute fixed to :00)" >&2
-  echo "  --container <name>  Target container running claude (default: claude-code-simple)" >&2
-  echo "  --model <model>     claude --model value (default: sonnet)" >&2
-  echo "  --max-turns <N>     claude --max-turns value (default: 30)" >&2
+  usage
   exit 1
 fi
 
