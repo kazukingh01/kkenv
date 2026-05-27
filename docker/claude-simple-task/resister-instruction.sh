@@ -189,7 +189,7 @@ if [ -n "${AT_HOURS}" ]; then
   TIMER_SCHEDULE="OnCalendar=*-*-* ${AT_HOURS}:00:00"
 else
   TIMER_DESC="Run claude task ${JOB_NAME} every ${INTERVAL_MIN} min"
-  TIMER_SCHEDULE="OnBootSec=1min
+  TIMER_SCHEDULE="OnActiveSec=${INTERVAL_MIN}min
 OnUnitActiveSec=${INTERVAL_MIN}min"
 fi
 sudo tee "/etc/systemd/system/${UNIT_NAME}.timer" >/dev/null <<EOF
