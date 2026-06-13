@@ -17,5 +17,8 @@ sudo machinectl shell aiagent@ /bin/bash -c 'DOCKER_HOST=unix:///run/user/$(id -
 
 ```bash
 su aiagent
+sudo loginctl enable-linger aiagent
+sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user start docker'
+sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user status docker --no-pager | head -5'
 GH_TOKEN=ghp_xxx bash ./start.sh
 ```
