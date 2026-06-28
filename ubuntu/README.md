@@ -20,6 +20,8 @@ sudo bash -c "echo ChallengeResponseAuthentication no >> /etc/ssh/sshd_config.d/
 sudo bash -c "echo PermitEmptyPasswords no >> /etc/ssh/sshd_config.d/99-override.conf"
 sudo bash -c "echo SyslogFacility AUTHPRIV >> /etc/ssh/sshd_config.d/99-override.conf"
 sudo bash -c "echo LogLevel VERBOSE >> /etc/ssh/sshd_config.d/99-override.conf"
+sudo bash -c "echo MaxStartups 30:30:100 >> /etc/ssh/sshd_config.d/99-override.conf"
+sudo bash -c "echo PerSourceMaxStartups 3 >> /etc/ssh/sshd_config.d/99-override.conf"
 sudo /etc/init.d/ssh restart
 ```
 
