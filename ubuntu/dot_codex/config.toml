@@ -1,0 +1,33 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# Claude の defaultMode = "acceptEdits" 相当。
+# workspace 内は読み書き可能とし、それを越える操作は必要に応じて承認を求める。
+approval_policy = "on-request"
+default_permissions = "claude_compatible"
+
+# Claude の Notification hook（command = "true"）相当。
+notify = ["true"]
+
+[permissions.claude_compatible]
+extends = ":workspace"
+description = "Workspace access with the same secret-file exclusions as Claude"
+
+# dot_claude/settings.json の Read deny を workspace 内へ適用する。
+[permissions.claude_compatible.filesystem]
+glob_scan_max_depth = 16
+
+[permissions.claude_compatible.filesystem.":workspace_roots"]
+".env" = "deny"
+".*.env" = "deny"
+"**/.env" = "deny"
+"**/.*.env" = "deny"
+"secrets/**" = "deny"
+"**/secrets/**" = "deny"
+
+# Claude の Stop hook（command = "true"）相当。
+[hooks]
+Stop = [{ hooks = [{ type = "command", command = "true" }] }]
+
+# rust-analyzer-lsp@claude-plugins-official は Claude 専用プラグインのため、
+# Codex の config.toml には直接対応する設定がない。
+# Codex の remote control は明示的に起動しない限り開始されない。

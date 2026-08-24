@@ -1,0 +1,40 @@
+# dot_claude/settings.json の Bash allow/deny を Codex の command rule に移植する。
+prefix_rule(
+    pattern = ["npm", "run", "lint"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["gh"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = [["ls", "which", "pyplaywright"]],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["cargo", "build"],
+    decision = "allow",
+)
+
+# Rules は引数単位の完全一致 prefix のみを扱うため、Claude 側の
+# `npm run test:*` と `/*/python .../pyplaywright.py *` はここでは広げない。
+# これらは workspace sandbox 内で実行し、範囲外の操作時だけ承認を求める。
+prefix_rule(
+    pattern = ["curl"],
+    decision = "forbidden",
+    justification = "curl is denied by the shared Claude/Codex policy",
+)
+
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "forbidden",
+    justification = "recursive forced removal is denied by the shared Claude/Codex policy",
+)
