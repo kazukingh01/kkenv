@@ -78,6 +78,17 @@ USER claude
 RUN git config --global user.email "claude@example.com" \
     && git config --global user.name "Claude"
 
+# Install Node.js (latest LTS) with nvm, then install Codex CLI globally
+ENV NVM_DIR=/home/claude/.nvm
+RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash \
+    && . "$NVM_DIR/nvm.sh" \
+    && nvm install --lts \
+    && nvm alias default 'lts/*' \
+    && npm install -g @openai/codex \
+    && codex --version \
+    && ln -s "$(dirname "$NVM_BIN")" "$NVM_DIR/current"
+ENV PATH=$NVM_DIR/current/bin:$PATH
+
 # Install Claude Code via native installer (supports `claude --update` / self-update)
 RUN curl -fsSL https://claude.ai/install.sh | bash
 ENV PATH=/home/claude/.local/bin:$PATH
