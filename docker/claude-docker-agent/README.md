@@ -4,8 +4,8 @@
 sudo adduser aiagent # "aiagent" is password
 sudo usermod -aG sudo aiagent
 su aiagent
-sudo apt install -y docker-ce-rootless-extras uidmap iptables
-# sudo apt install -y --allow-downgrades docker-ce-rootless-extras=5:24.0.5-1~ubuntu.22.04~jammy # You must match vertion as docker-ce
+sudo apt install -y docker-ce-rootless-extras uidmap iptables systemd-container
+# sudo apt install -y --allow-downgrades "docker-ce-rootless-extras=$(dpkg-query -W -f='${Version}' docker-ce)"
 sudo apt-mark hold docker-ce-rootless-extras
 sudo machinectl shell aiagent@ /bin/bash -c "dockerd-rootless-setuptool.sh install"
 ## check
