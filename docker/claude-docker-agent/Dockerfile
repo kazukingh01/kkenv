@@ -94,6 +94,7 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 ENV PATH=/home/claude/.local/bin:$PATH
 
 RUN echo 'alias claude="claude --dangerously-skip-permissions"' >> /home/claude/.bashrc
+RUN echo 'alias codex="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/claude/.bashrc
 
 COPY --chown=claude:claude docker-entrypoint.sh /home/claude/docker-entrypoint.sh
 RUN chmod +x /home/claude/docker-entrypoint.sh

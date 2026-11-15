@@ -21,6 +21,6 @@ sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user start docker'
 sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user status docker --no-pager | head -5'
 # as aiagent
 su aiagent
-# vi ~/.env # GH_TOKEN=ghp_xxx
-set -a; source ~/.env; set +a; bash ./start.sh
+GH_TOKEN=ghp_xxx bash ./start.sh
+history -c && history -w
 ```
