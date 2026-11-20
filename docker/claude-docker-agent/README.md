@@ -13,6 +13,20 @@ sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user restart docker && 
 sudo machinectl shell aiagent@ /bin/bash -c 'DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock docker run --rm hello-world'
 ```
 
+# GPU (optional)
+
+Requires the NVIDIA driver on the host and [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+
+```bash
+# as an admin user
+sudo apt install -y nvidia-container-toolkit
+sudo nvidia-ctk config --set nvidia-container-cli.no-cgroups --in-place   # required for rootless
+sudo machinectl shell aiagent@ /bin/bash -c 'nvidia-ctk runtime configure --runtime=docker --config=$HOME/.config/docker/daemon.json'
+sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user restart docker'
+## check
+sudo machinectl shell aiagent@ /bin/bash -c 'DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock docker run --rm --gpus all ubuntu nvidia-smi'
+```
+
 # Run
 
 ```bash
@@ -21,6 +35,8 @@ sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user start docker'
 sudo machinectl shell aiagent@ /bin/bash -c 'systemctl --user status docker --no-pager | head -5'
 # as aiagent
 su aiagent
-GH_TOKEN=ghp_xxx bash ./start.sh
+GH_TOKEN=ghp_xxx bash ./start.sh            # or: bash ./start.sh <name>
+GH_TOKEN=ghp_xxx bash ./start.sh --gpu      # with GPU, based on nvidia/cuda devel image (see "GPU" above)
+CUDA_IMAGE=nvidia/cuda:13.0.2-devel-ubuntu24.04 GH_TOKEN=ghp_xxx bash ./start.sh --gpu   # pick a CUDA version your host driver supports
 history -c && history -w
 ```
